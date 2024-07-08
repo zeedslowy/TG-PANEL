@@ -55,12 +55,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>Giriş Menü</h1>
+        <h1>GİRİŞ MENÜ</h1>
         <form action="login.php" method="post">
             <label for="username">Kullanıcı Adı:</label>
-            <input type="text" id="username" name="username" placeholder="Kullanıcı Ad" required>
+            <input type="text" id="username" name="username" placeholder="USERNAME" required>
             <label for="password">Şifre:</label>
-            <input type="password" id="password" name="password" placeholder="Şifreniz" required>
+            <input type="password" id="password" name="password" placeholder="PASSAWORD" required>
             <button type="submit">Giriş Yap</button>
         </form>
         <div class="message">
