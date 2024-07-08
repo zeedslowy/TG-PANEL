@@ -55,7 +55,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Telegram Bot Yönetim Paneli - Kayıt Ol</h1>
+        <h1>KAYIT Ol</h1>
         <form action="register_submit.php" method="post">
             <label for="username">Kullanıcı Adı:</label>
             <input type="text" id="username" name="username" placeholder="Kullanıcı Adınızı Girin" required>
