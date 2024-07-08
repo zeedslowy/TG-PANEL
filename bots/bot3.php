@@ -1,85 +1,83 @@
 <?php
-// Start the session
-session_start();
+// Include the necessary libraries
+require_once 'vendor/autoload.php';
+require_once '../config/database.php';
 
-// Check if the user is logged in
-if (!isset($_SESSION['username'])) {
-    header("Location: index.php?error=notloggedin");
-    exit();
+use Anthropic\LanguageModel\ChatModel;
+
+// Initialize the chat model
+$model = new ChatModel('your_api_key_here');
+
+// Check if the form has been submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get the user input from the form
+    $userMessage = $_POST["message"];
+
+    // Generate a response from the chat model
+    $botResponse = $model->generateResponse($userMessage);
+
+    // Save the conversation to the database
+    $sql = "INSERT INTO conversations (user_message, bot_response, created_at) VALUES (?, ?, NOW())";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $userMessage, $botResponse);
+    $stmt->execute();
 }
-
-// Database connection details
-$servername = "localhost";
-$username = "your_username";
-$password = "your_password";
-$database = "your_database";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $database);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Get bot details from the database
-$bot_id = 3; // This is the ID of the third bot
-$sql = "SELECT * FROM bots WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $bot_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $bot_name = $row['name'];
-    $bot_description = $row['description'];
-    $bot_status = $row['status'];
-    $bot_created_at = $row['created_at'];
-} else {
-    echo "No bot found.";
-    exit();
-}
-
-$stmt->close();
-$conn->close();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Bot 3 - Management Panel</title>
+    <title>Bot 3</title>
     <style>
-        /* Add your CSS styles here */
+        .chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f4f4f4;
+        }
+        .chat-box {
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 20px;
+        }
+        .user-message, .bot-message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user-message {
+            background-color: #d1ecf1;
+            text-align: right;
+        }
+        .bot-message {
+            background-color: #e2e3e5;
+        }
     </style>
 </head>
 <body>
-    <h1>Bot 3 - Management Panel</h1>
-    <h2><?php echo $bot_name; ?></h2>
-    <p><?php echo $bot_description; ?></p>
-    <p>Status: <?php echo $bot_status; ?></p>
-    <p>Created at: <?php echo $bot_created_at; ?></p>
-
-    <h3>Bot Actions</h3>
-    <button onclick="startBot()">Start</button>
-    <button onclick="stopBot()">Stop</button>
-    <button onclick="restartBot()">Restart</button>
-
-    <script>
-        function startBot() {
-            // Add your JavaScript code to start the bot
-            alert("Starting the bot...");
-        }
-
-        function stopBot() {
-            // Add your JavaScript code to stop the bot
-            alert("Stopping the bot...");
-        }
-
-        function restartBot() {
-            // Add your JavaScript code to restart the bot
-            alert("Restarting the bot...");
-        }
-    </script>
+    <div class="chat-container">
+        <h1>Bot 3</h1>
+        <div class="chat-box">
+            <?php
+            // Fetch the conversation history from the database
+            $sql = "SELECT user_message, bot_response, created_at FROM conversations ORDER BY id DESC LIMIT 10";
+            $result = $conn->query($sql);
+            if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                    echo "<div class='user-message'>" . $row["user_message"] . "</div>";
+                    echo "<div class='bot-message'>" . $row["bot_response"] . "</div>";
+                }
+            } else {
+                echo "No conversation history found.";
+            }
+            ?>
+        </div>
+        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+            <input type="text" name="message" placeholder="Type your message..." required>
+            <input type="submit" name="submit" value="Send">
+        </form>
+    </div>
 </body>
 </html>
