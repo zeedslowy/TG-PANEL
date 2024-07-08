@@ -11,7 +11,7 @@
             padding: 0;
         }
         .container {
-            max-width: 800px;
+            max-width: 400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -19,30 +19,55 @@
             text-align: center;
             margin-top: 50px;
         }
-        .bot-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        .bot-list li {
+        form {
             background-color: #333;
-            padding: 10px;
-            margin-bottom: 10px;
+            padding: 20px;
             border-radius: 5px;
         }
-        .bot-list li a {
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
             color: white;
-            text-decoration: none;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            text-align: center;
+            color: red;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Telegram Bot Yönetim Paneli</h1>
-        <ul class="bot-list">
-            <li><a href="bot1.php">Bot 1</a></li>
-            <li><a href="bot2.php">Bot 2</a></li>
-            <li><a href="bot3.php">Bot 3</a></li>
-        </ul>
-    </div>
-</body>
-</html>
+        <form action="login.php" method="post">
+            <label for="username">Kullanıcı Adı:</label>
+            <input type="text" id="username" name="username" placeholder="Kullanıcı Ad" required>
+            <label for="password">Şifre:</label>
+            <input type="password" id="password" name="password" placeholder="Şifreniz" required>
+            <button type="submit">Giriş Yap</button>
+        </form>
+        <div class="message">
+            <?php
+                if(isset($_GET['error'])) {
+                    echo "Geçersiz kullanıcı adı veya şifre.";
+                }
+            ?>
+        </div>
+        <p style="text-align: center; margin-top: 20px;">Hesabınız yok mu? <a href="register.php" style="color: white
